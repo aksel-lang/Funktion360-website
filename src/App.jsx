@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import { supabase } from "./lib/supabase.js";
+import { useEffect, useState } from "react";
 import './styles.css';
 
 const services = [
@@ -22,6 +23,44 @@ const principles = [
 ];
 
 export function App(){
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProducts() {
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          id,
+          name,
+          slug,
+          short_description,
+          website_url,
+          sort_order,
+          published_at
+        `)
+        .eq("status", "published")
+        .lte("published_at", new Date().toISOString())
+        .order("sort_order", { ascending: true });
+
+      if (!active) return;
+
+      if (error) {
+        console.error("Kunne ikke hente produkter:", error);
+        return;
+      }
+
+      setProducts(data ?? []);
+    }
+
+    loadProducts();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const [open,setOpen]=useState(false);
   const close=()=>setOpen(false);
   return <>
@@ -57,7 +96,27 @@ export function App(){
 
     <section className="section products" id="produkter"><div className="wrap">
       <div className="section-head"><div><p className="eyebrow">03 / Egne produkter</p><h2>Idéer bliver også<br/>til egne produkter.</h2></div><p>Vi udvikler egne løsninger ud fra behov, vi ser i praksis. Produktoversigten kan vokse, når nye idéer bliver til software.</p></div>
-      <div className="product"><div className="product-mark">F<span>360</span></div><div><small>Produkt 01</small><h3>Favn360</h3><p>En moderne platform inden for funktions- og socialfaglig dokumentation.</p></div><span className="status">Under udvikling</span></div>
+      {products.map((product, index) => (
+        <div className="product" key={product.id}>
+          <div className="product-mark">
+            {product.name.charAt(0).toUpperCase()}<span>360</span>
+          </div>
+
+          <div>
+            <small>
+              Produkt {String(index + 1).padStart(2, "0")}
+            </small>
+
+            <h3>{product.name}</h3>
+
+            {product.short_description && (
+              <p>{product.short_description}</p>
+            )}
+          </div>
+
+          <span className="status">Under udvikling</span>
+        </div>
+      ))}
     </div></section>
 
     <section className="section responsibility" id="ansvar"><div className="wrap">
