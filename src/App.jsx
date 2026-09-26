@@ -1,5 +1,6 @@
 import { supabase } from "./lib/supabase.js";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import './styles.css';
 
 const services = [
@@ -103,36 +104,47 @@ export function App(){
     <section className="section products" id="produkter"><div className="wrap">
       <div className="section-head"><div><p className="eyebrow">03 / Egne produkter</p><h2>Idéer bliver også<br/>til egne produkter.</h2></div><p>Vi udvikler egne løsninger ud fra behov, vi ser i praksis. Produktoversigten kan vokse, når nye idéer bliver til software.</p></div>
       {products.map((product, index) => (
-        <div className="product" key={product.id}>
+        <article className="product" key={product.id}>
           <div className="product-mark">
             {product.name.charAt(0).toUpperCase()}<span>360</span>
           </div>
 
-          <div>
+          <div className="product-content">
             <small>
               Produkt {String(index + 1).padStart(2, "0")}
             </small>
 
             <h3>{product.name}</h3>
 
-            {product.product_features?.length > 0 && (
-  <ul className="product-features">
-    {product.product_features
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map((feature) => (
-        <li className="product-feature" key={feature.id}>
-          <strong>{feature.title}</strong>
-          {feature.description && (
-            <p>{feature.description}</p>
-          )}
-        </li>
-      ))}
-  </ul>
-)}
-          </div>
+            {product.short_description && (
+              <p className="product-description">
+                {product.short_description}
+              </p>
+            )}
 
-          <span className="status">Under udvikling</span>
-        </div>
+            {product.product_features?.length > 0 && (
+              <ul className="product-features">
+                {[...product.product_features]
+                  .sort((a, b) => a.sort_order - b.sort_order)
+                  .map((feature) => (
+                    <li className="product-feature" key={feature.id}>
+                      <strong>{feature.title}</strong>
+                      {feature.description && (
+                        <p>{feature.description}</p>
+                      )}
+                    </li>
+                  ))}
+              </ul>
+            )}
+
+            <Link
+              className="product-link"
+              to={`/produkter/${product.slug}`}
+            >
+              Se {product.name} →
+            </Link>
+          </div>
+        </article>
       ))}
     </div></section>
 
