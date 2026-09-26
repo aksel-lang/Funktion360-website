@@ -38,7 +38,13 @@ export function App(){
           short_description,
           website_url,
           sort_order,
-          published_at
+          published_at,
+          product_features (
+            id,
+            title,
+            description,
+            sort_order
+            )
         `)
         .eq("status", "published")
         .lte("published_at", new Date().toISOString())
@@ -109,9 +115,20 @@ export function App(){
 
             <h3>{product.name}</h3>
 
-            {product.short_description && (
-              <p>{product.short_description}</p>
-            )}
+            {product.product_features?.length > 0 && (
+  <ul className="product-features">
+    {product.product_features
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((feature) => (
+        <li className="product-feature" key={feature.id}>
+          <strong>{feature.title}</strong>
+          {feature.description && (
+            <p>{feature.description}</p>
+          )}
+        </li>
+      ))}
+  </ul>
+)}
           </div>
 
           <span className="status">Under udvikling</span>
