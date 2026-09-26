@@ -1520,7 +1520,35 @@ async function handleDeleteAudience(audience) {
             ) : (
               <div>
                 {sections.map((section) => (
-                  <article key={section.id}>
+                  <details
+                    className="admin-section-editor"
+                    key={section.id}
+                  >
+                    <summary>
+                      <div>
+                        <strong>
+                          {section.title || "Sektion uden titel"}
+                        </strong>
+
+                        <span>
+                          {section.layout} · Sortering {section.sort_order}
+                        </span>
+                      </div>
+
+                      <span
+                        className={
+                          section.is_published
+                            ? "admin-section-state published"
+                            : "admin-section-state draft"
+                        }
+                      >
+                        {section.is_published
+                          ? "Publiceret"
+                          : "Skjult"}
+                      </span>
+                    </summary>
+
+                    <div className="admin-section-editor-body">
                     <label>
                       Nøgle
                       <input
@@ -1579,7 +1607,7 @@ async function handleDeleteAudience(audience) {
 
                     <label>
                       Layout
-                      <input
+                      <select
                         value={section.layout}
                         onChange={(event) =>
                           updateSection(
@@ -1588,7 +1616,19 @@ async function handleDeleteAudience(audience) {
                             event.target.value,
                           )
                         }
-                      />
+                      >
+                        <option value="standard">Standard</option>
+                        <option value="process">Proces</option>
+                        <option value="split">Delt layout</option>
+                        <option value="roadmap">Roadmap</option>
+                        <option value="report">Rapport</option>
+                        <option value="security">Sikkerhed</option>
+                        <option value="business">Erhverv / organisation</option>
+                      </select>
+
+                      <small className="admin-field-help">
+                        Vælg hvordan sektionen præsenteres på produktsiden.
+                      </small>
                     </label>
 
                     <label>
@@ -1636,7 +1676,8 @@ async function handleDeleteAudience(audience) {
                     >
                       Slet sektion
                     </button>
-                  </article>
+                  </div>
+                  </details>
                 ))}
               </div>
             )}
@@ -1684,11 +1725,23 @@ async function handleDeleteAudience(audience) {
 
               <label>
                 Layout
-                <input
+                <select
                   name="layout"
                   value={newSection.layout}
                   onChange={updateNewSection}
-                />
+                >
+                  <option value="standard">Standard</option>
+                  <option value="process">Proces</option>
+                  <option value="split">Delt layout</option>
+                  <option value="roadmap">Roadmap</option>
+                  <option value="report">Rapport</option>
+                  <option value="security">Sikkerhed</option>
+                  <option value="business">Erhverv / organisation</option>
+                </select>
+
+                <small className="admin-field-help">
+                  Layoutet bestemmer den visuelle præsentation på produktsiden.
+                </small>
               </label>
 
               <label>

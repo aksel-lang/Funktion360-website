@@ -1267,3 +1267,132 @@
     margin-left: 0;
   }
 }
+
+/* =========================================================
+   Funktion360 CMS — Collapsible content sections
+   ========================================================= */
+
+.admin-section-editor {
+  margin: 14px 0;
+  overflow: hidden;
+  border: 1px solid #d8dad3;
+  border-radius: 14px;
+  background: #f8f8f4;
+}
+
+.admin-section-editor[open] {
+  border-color: #bec2b7;
+  box-shadow: 0 8px 24px rgba(32, 33, 32, .045);
+}
+
+.admin-section-editor > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 22px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.admin-section-editor > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-section-editor > summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  place-items: center;
+  border: 1px solid #d8dad3;
+  border-radius: 50%;
+  background: #fff;
+  color: #202120;
+  font: 700 18px/1 "Space Mono", monospace;
+}
+
+.admin-section-editor[open] > summary::after {
+  content: "−";
+}
+
+.admin-section-editor > summary > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.admin-section-editor > summary strong {
+  overflow: hidden;
+  color: #202120;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-section-editor > summary div span {
+  color: #777a72;
+  font: 10px "Space Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.admin-section-state {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font: 700 9px "Space Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.admin-section-state.published {
+  background: #eaf8ce;
+  color: #506a17;
+}
+
+.admin-section-state.draft {
+  background: #eceee7;
+  color: #686b63;
+}
+
+.admin-section-editor-body {
+  display: grid;
+  gap: 17px;
+  padding: 22px;
+  border-top: 1px solid #d8dad3;
+  background: #fff;
+}
+
+.admin-field-help {
+  display: block;
+  margin-top: 2px;
+  color: #777a72;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+@media (max-width: 600px) {
+  .admin-section-editor > summary {
+    gap: 12px;
+    padding: 17px;
+  }
+
+  .admin-section-editor > summary::after {
+    width: 27px;
+    height: 27px;
+  }
+
+  .admin-section-state {
+    display: none;
+  }
+
+  .admin-section-editor-body {
+    padding: 17px;
+  }
+}
