@@ -11,6 +11,8 @@ export function AdminProductCreate() {
     short_description: "",
     description: "",
     website_url: "",
+    lifecycle_status: "development",
+    show_on_homepage: true,
     sort_order: 0,
   });
 
@@ -18,11 +20,11 @@ export function AdminProductCreate() {
   const [error, setError] = useState("");
 
   function updateField(event) {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setForm((current) => ({
       ...current,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   }
 
@@ -39,6 +41,8 @@ export function AdminProductCreate() {
         short_description: form.short_description.trim() || null,
         description: form.description.trim() || null,
         website_url: form.website_url.trim() || null,
+      lifecycle_status: form.lifecycle_status,
+      show_on_homepage: form.show_on_homepage,
         sort_order: Number(form.sort_order) || 0,
         status: "draft",
         published_at: null,
@@ -118,7 +122,31 @@ export function AdminProductCreate() {
             value={form.website_url}
             onChange={updateField}
           />
-        </label>
+        </label>      <label>
+        Produktstatus
+        <select
+          name="lifecycle_status"
+          value={form.lifecycle_status}
+          onChange={updateField}
+        >
+          <option value="development">Under udvikling</option>
+          <option value="beta">Beta</option>
+          <option value="active">Aktiv</option>
+          <option value="coming_soon">Kommer snart</option>
+        </select>
+      </label>
+
+      <label>
+        <input
+          name="show_on_homepage"
+          type="checkbox"
+          checked={form.show_on_homepage}
+          onChange={updateField}
+        />
+        Vis produkt på forsiden
+      </label>
+
+
 
         <label>
           Sortering

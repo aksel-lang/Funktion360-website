@@ -23,6 +23,13 @@ const principles = [
   ['Operations','Software skal også fungere i drift.']
 ];
 
+const lifecycleLabels = {
+  development: "Under udvikling",
+  beta: "Beta",
+  active: "Aktiv",
+  coming_soon: "Kommer snart",
+};
+
 export function App(){
   const [products, setProducts] = useState([]);
 
@@ -38,6 +45,8 @@ export function App(){
           slug,
           short_description,
           website_url,
+          lifecycle_status,
+          show_on_homepage,
           sort_order,
           published_at,
           product_features (
@@ -48,6 +57,7 @@ export function App(){
             )
         `)
         .eq("status", "published")
+        .eq("show_on_homepage", true)
         .lte("published_at", new Date().toISOString())
         .order("sort_order", { ascending: true });
 
@@ -114,7 +124,11 @@ export function App(){
               Produkt {String(index + 1).padStart(2, "0")}
             </small>
 
-            <h3>{product.name}</h3>
+            <span className={`product-status product-status--${product.lifecycle_status}`}>
+            {lifecycleLabels[product.lifecycle_status] ?? "Under udvikling"}
+          </span>
+
+          <h3>{product.name}</h3>
 
             {product.short_description && (
               <p className="product-description">
