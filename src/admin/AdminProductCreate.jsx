@@ -55,14 +55,22 @@ export function AdminProductCreate() {
   }
 
   return (
-    <main>
-      <button type="button" onClick={() => navigate("/admin")}>
+    <main className="admin-editor">
+      <button
+        className="admin-back"
+        type="button"
+        onClick={() => navigate("/admin")}
+      >
         ← Tilbage
       </button>
 
       <h1>Opret produkt</h1>
 
-      <form onSubmit={handleSubmit}>
+      <section>
+        <h2>Produkt</h2>
+        <p>Opret et nyt produkt som kladde. Indhold og publicering kan administreres bagefter.</p>
+
+        <form onSubmit={handleSubmit}>
         <label>
           Navn
           <input
@@ -124,10 +132,11 @@ export function AdminProductCreate() {
 
         {error && <p role="alert">{error}</p>}
 
-        <button type="submit" disabled={saving}>
-          {saving ? "Opretter..." : "Opret som kladde"}
-        </button>
-      </form>
+          <button type="submit" disabled={saving}>
+            {saving ? "Opretter..." : "Opret som kladde"}
+          </button>
+        </form>
+      </section>
     </main>
   );
 }

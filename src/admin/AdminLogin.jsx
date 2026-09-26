@@ -42,10 +42,15 @@ export function AdminLogin() {
   }
 
   return (
-    <main>
-      <h1>Funktion360 Admin</h1>
+    <main className="admin-login">
+      <section className="admin-login-card">
+        <div className="admin-login-brand">
+          <p>Funktion360</p>
+          <h1>Administration</h1>
+          <span>Log ind for at administrere produkter og indhold.</span>
+        </div>
 
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
         <label>
           E-mail
           <input
@@ -73,7 +78,8 @@ export function AdminLogin() {
         <button type="submit" disabled={loading}>
           {loading ? "Logger ind..." : "Log ind"}
         </button>
-      </form>
+        </form>
+      </section>
     </main>
   );
 }

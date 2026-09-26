@@ -8,6 +8,7 @@ import { AdminProductCreate } from "./admin/AdminProductCreate.jsx";
 import { AdminProductEdit } from "./admin/AdminProductEdit.jsx";
 import { ProtectedAdminRoute } from "./admin/ProtectedAdminRoute.jsx";
 import "./styles.css";
+import { ProductPage } from "./products/ProductPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -41,6 +42,8 @@ createRoot(document.getElementById("root")).render(
             </ProtectedAdminRoute>
           }
         />
+
+        <Route path="/produkter/:slug" element={<ProductPage />} />
 
         <Route path="/*" element={<App />} />
       </Routes>

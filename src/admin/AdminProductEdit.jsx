@@ -1184,8 +1184,12 @@ async function handleDeleteAudience(audience) {
   }
 
   return (
-    <main>
-      <button type="button" onClick={() => navigate("/admin")}>
+    <main className="admin-editor">
+      <button
+        className="admin-back"
+        type="button"
+        onClick={() => navigate("/admin")}
+      >
         ← Tilbage
       </button>
 

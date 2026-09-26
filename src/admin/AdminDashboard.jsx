@@ -52,8 +52,8 @@ export function AdminDashboard() {
   }
 
   return (
-    <main>
-      <header>
+    <main className="admin-shell">
+      <header className="admin-header">
         <div>
           <p>Funktion360</p>
           <h1>Administration</h1>
@@ -64,16 +64,19 @@ export function AdminDashboard() {
         </button>
       </header>
 
-      <section>
-        <p>Logget ind som</p>
+      <section className="admin-userbar">
+  <p>Logget ind som</p>
         <strong>{email}</strong>
       </section>
 
-      <section>
-        <div>
-          <h2>Produkter</h2>
-          <p>Administrér Funktion360s produkter.</p>
-          <Link to="/admin/products/new">
+      <section className="admin-content">
+  <div className="admin-section-head">
+    <div>
+      <p className="admin-eyebrow">Produktadministration</p>
+      <h2>Produkter</h2>
+      <p>Administrér Funktion360s produkter.</p>
+      </div>
+          <Link className="admin-primary-action" to="/admin/products/new">
             Opret produkt
           </Link>
         </div>
@@ -87,9 +90,9 @@ export function AdminDashboard() {
         )}
 
         {!loadingProducts && products.length > 0 && (
-          <div>
+          <div className="admin-product-list">
             {products.map((product) => (
-              <article key={product.id}>
+              <article className="admin-product-card" key={product.id}>
                 <div>
                   <small>
                     {product.status === "published"
@@ -116,7 +119,10 @@ export function AdminDashboard() {
                     </span>
                   )}
 
-                  <Link to={`/admin/products/${product.id}/edit`}>
+                  <Link
+                  className="admin-edit-link"
+                  to={`/admin/products/${product.id}/edit`}
+                >
                     Rediger
                   </Link>
                 </div>
