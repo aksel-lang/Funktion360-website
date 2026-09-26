@@ -541,6 +541,80 @@
   line-height: 1.5;
 }
 
+.admin-product-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.admin-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 9px;
+  border: 1px solid #d3d7c9;
+  border-radius: 999px;
+  background: #f1f2ec;
+  color: #575a53;
+  font: 700 9px/1.2 "Space Mono", monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-status--published {
+  border-color: #b9d67a;
+  background: #dff3b1;
+  color: #344916;
+}
+
+.admin-status--draft {
+  border-color: #d3d7c9;
+  background: #eeefe9;
+  color: #686b63;
+}
+
+.admin-status--development {
+  border-color: #ded2b7;
+  background: #f4efe3;
+  color: #6a5931;
+}
+
+.admin-status--beta {
+  border-color: #cbd5df;
+  background: #e9eef3;
+  color: #40566a;
+}
+
+.admin-status--active {
+  border-color: #c7d99f;
+  background: #edf6da;
+  color: #4e6422;
+}
+
+.admin-status--coming_soon {
+  border-color: #d4cddd;
+  background: #f0ecf3;
+  color: #60516b;
+}
+
+.admin-status--homepage,
+.admin-status--hidden {
+  background: transparent;
+}
+
+.admin-status--homepage {
+  border-color: #9eae7a;
+  color: #506224;
+}
+
+.admin-status--hidden {
+  border-style: dashed;
+  color: #777a72;
+}
+
 .admin-product-card > div:last-child {
   display: flex;
   align-items: center;
@@ -601,6 +675,17 @@
 
   .admin-product-card > div:last-child {
     flex-wrap: wrap;
+  }
+
+  .admin-product-statuses {
+    gap: 5px;
+    margin-bottom: 11px;
+  }
+
+  .admin-status {
+    min-height: 23px;
+    padding: 4px 8px;
+    font-size: 8.5px;
   }
 
   .admin-edit-link {
@@ -944,5 +1029,241 @@
 
   .admin-login-brand h1 {
     font-size: 40px;
+  }
+}
+
+/* =========================================================
+   Funktion360 Product CMS
+   ========================================================= */
+
+.admin-editor-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin: 30px 0 32px;
+}
+
+.admin-editor-header h1 {
+  margin: 4px 0 0;
+  font-size: clamp(42px, 6vw, 68px);
+  line-height: .96;
+  letter-spacing: -.055em;
+}
+
+.admin-editor-header .admin-eyebrow {
+  margin: 0;
+}
+
+.admin-product-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.admin-product-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 29px;
+  padding: 6px 11px;
+  border: 1px solid #d8dad3;
+  border-radius: 999px;
+  background: #fff;
+  color: #555850;
+  font: 700 10px "Space Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* CMS tab navigation */
+
+.admin-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  margin: 0 0 30px;
+  padding: 6px;
+  overflow-x: auto;
+  border: 1px solid #d8dad3;
+  border-radius: 14px;
+  background: rgba(248, 248, 244, .96);
+  backdrop-filter: blur(12px);
+}
+
+.admin-tab {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 9px 17px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #686b63;
+  font: 700 11px "Space Mono", monospace;
+  cursor: pointer;
+  transition:
+    background .15s,
+    color .15s,
+    transform .15s;
+}
+
+.admin-tab:hover {
+  background: #eceee7;
+  color: #202120;
+}
+
+.admin-tab.active {
+  background: #202120;
+  color: #cfff69;
+}
+
+/* Current CMS panel */
+
+.admin-tabs + .admin-error,
+.admin-tabs + section,
+.admin-tabs + .admin-error + section {
+  margin-top: 0;
+}
+
+.admin-editor > section {
+  animation: admin-panel-in .18s ease-out;
+}
+
+@keyframes admin-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Content editor cards */
+
+.admin-editor section article {
+  position: relative;
+  transition:
+    border-color .15s,
+    box-shadow .15s;
+}
+
+.admin-editor section article:hover {
+  border-color: #bec2b7;
+  box-shadow: 0 8px 24px rgba(32, 33, 32, .045);
+}
+
+/* Checkbox rows */
+
+.admin-editor .admin-checkbox {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  min-height: 36px;
+}
+
+.admin-editor .admin-checkbox input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #202120;
+}
+
+/* Action area */
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.admin-actions button:first-child {
+  background: #202120;
+  color: #fff;
+}
+
+.admin-actions button:first-child:hover:not(:disabled) {
+  background: #343634;
+}
+
+.admin-actions button:nth-child(2) {
+  background: #cfff69;
+  color: #202120;
+}
+
+.admin-actions button:nth-child(2):hover:not(:disabled) {
+  background: #ddff9d;
+}
+
+.admin-actions button:last-child {
+  margin-left: auto;
+  border-color: #dfc2bd;
+  background: #fff;
+  color: #8a3027;
+}
+
+.admin-actions button:last-child:hover:not(:disabled) {
+  border-color: #c99289;
+  background: #fff1ef;
+}
+
+/* CMS error */
+
+.admin-error {
+  margin: 0 0 24px;
+}
+
+/* CMS responsive */
+
+@media (max-width: 800px) {
+  .admin-editor-header {
+    display: block;
+  }
+
+  .admin-product-meta {
+    justify-content: flex-start;
+    margin-top: 20px;
+  }
+
+  .admin-tabs {
+    margin-right: -20px;
+    margin-left: -20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-editor-header h1 {
+    font-size: 42px;
+  }
+
+  .admin-product-meta span {
+    font-size: 9px;
+  }
+
+  .admin-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-actions button {
+    width: 100%;
+  }
+
+  .admin-actions button:last-child {
+    margin-left: 0;
   }
 }

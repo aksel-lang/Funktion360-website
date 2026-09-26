@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabase.js";
 export function AdminProductEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
 
 
   const [form, setForm] = useState(null);
@@ -1187,6 +1188,21 @@ async function handleDeleteAudience(audience) {
     );
   }
 
+  const tabs = [
+    ["overview", "Oversigt"],
+    ["content", "Indhold"],
+    ["audiences", "Målgrupper"],
+    ["pricing", "Priser"],
+    ["ctas", "CTA'er"],
+  ];
+
+  const lifecycleLabels = {
+    development: "Under udvikling",
+    beta: "Beta",
+    active: "Aktiv",
+    coming_soon: "Kommer snart",
+  };
+
   return (
     <main className="admin-editor">
       <button
@@ -1197,1123 +1213,1224 @@ async function handleDeleteAudience(audience) {
         ← Tilbage
       </button>
 
-      <h1>Rediger {form.name}</h1>
+      <header className="admin-editor-header">
+        <div>
+          <p className="admin-eyebrow">Produktadministration</p>
+          <h1>Rediger {form.name}</h1>
+        </div>
 
-      <section>
-        <h2>Produkt</h2>
+        <div className="admin-product-meta">
+          <span>
+            {lifecycleLabels[form.lifecycle_status] ??
+              form.lifecycle_status}
+          </span>
 
-        <form onSubmit={handleSubmit}>
-          <label>
-            Navn
-            <input
-              name="name"
-              value={form.name}
-              onChange={updateField}
-              required
-            />
-          </label>
+          <span>
+            {form.show_on_homepage
+              ? "På forsiden"
+              : "Skjult fra forsiden"}
+          </span>
 
-          <label>
-            Slug
-            <input
-              name="slug"
-              value={form.slug}
-              onChange={updateField}
-              required
-            />
-          </label>
+          <span>
+            {form.status === "published"
+              ? "Publiceret"
+              : "Kladde"}
+          </span>
+        </div>
+      </header>
 
-          <label>
-            Kort beskrivelse
-            <textarea
-              name="short_description"
-              value={form.short_description}
-              onChange={updateField}
-            />
-          </label>
+      <nav className="admin-tabs" aria-label="Produktadministration">
+        {tabs.map(([tab, label]) => (
+          <button
+            key={tab}
+            type="button"
+            className={
+              activeTab === tab
+                ? "admin-tab active"
+                : "admin-tab"
+            }
+            onClick={() => setActiveTab(tab)}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
 
-          <label>
-            Beskrivelse
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={updateField}
-            />
-          </label>
+      {error && (
+        <p className="admin-error" role="alert">
+          {error}
+        </p>
+      )}
 
-          <label>
-            Produktwebsite
-            <input
-              name="website_url"
-              type="url"
-              value={form.website_url}
-              onChange={updateField}
-            />
-          </label>
+      {activeTab === "overview" && (
+        <section>
+          <h2>Grundoplysninger</h2>
 
-          <label>
-            Sortering
-            <input
-              name="sort_order"
-              type="number"
-              value={form.sort_order}
-              onChange={updateField}
-            />
-          </label>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Navn
+              <input
+                name="name"
+                value={form.name}
+                onChange={updateField}
+                required
+              />
+            </label>
 
-          <label>
-            Produktstatus
-            <select
-              name="lifecycle_status"
-              value={form.lifecycle_status}
-              onChange={updateField}
-            >
-              <option value="development">Under udvikling</option>
-              <option value="beta">Beta</option>
-              <option value="active">Aktiv</option>
-              <option value="coming_soon">Kommer snart</option>
-            </select>
-          </label>
+            <label>
+              Slug
+              <input
+                name="slug"
+                value={form.slug}
+                onChange={updateField}
+                required
+              />
+            </label>
 
-          <label>
-            <input
-              name="show_on_homepage"
-              type="checkbox"
-              checked={form.show_on_homepage}
-              onChange={updateField}
-            />
-            Vis produkt på forsiden
-          </label>
+            <label>
+              Kort beskrivelse
+              <textarea
+                name="short_description"
+                value={form.short_description}
+                onChange={updateField}
+              />
+            </label>
+
+            <label>
+              Beskrivelse
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={updateField}
+              />
+            </label>
+
+            <label>
+              Produktwebsite
+              <input
+                name="website_url"
+                type="url"
+                value={form.website_url}
+                onChange={updateField}
+              />
+            </label>
+
+            <label>
+              Sortering
+              <input
+                name="sort_order"
+                type="number"
+                value={form.sort_order}
+                onChange={updateField}
+              />
+            </label>
+
+            <h3>Synlighed og livscyklus</h3>
+
+            <label>
+              Produktstatus
+              <select
+                name="lifecycle_status"
+                value={form.lifecycle_status}
+                onChange={updateField}
+              >
+                <option value="development">Under udvikling</option>
+                <option value="beta">Beta</option>
+                <option value="active">Aktiv</option>
+                <option value="coming_soon">Kommer snart</option>
+              </select>
+            </label>
+
+            <label className="admin-checkbox">
+              <input
+                name="show_on_homepage"
+                type="checkbox"
+                checked={form.show_on_homepage}
+                onChange={updateField}
+              />
+              Vis produkt på forsiden
+            </label>
+
+            <p>
+              Publicering:{" "}
+              <strong>
+                {form.status === "published"
+                  ? "Publiceret"
+                  : "Kladde"}
+              </strong>
+            </p>
+
+            <div className="admin-actions">
+              <button type="submit" disabled={saving}>
+                {saving ? "Gemmer..." : "Gem ændringer"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handlePublishToggle}
+                disabled={saving}
+              >
+                {form.status === "published"
+                  ? "Afpublicér produkt"
+                  : "Publicér produkt"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={saving}
+              >
+                Slet produkt
+              </button>
+            </div>
+          </form>
+        </section>
+      )}
+
+      {activeTab === "content" && (
+        <>
+          <section>
+            <h2>Produktfunktioner</h2>
+
+            <p>
+              Funktionerne bruges på produktets offentlige produktside.
+            </p>
+
+            {featureError && (
+              <p role="alert">{featureError}</p>
+            )}
+
+            {features.length === 0 ? (
+              <p>Produktet har endnu ingen funktioner.</p>
+            ) : (
+              <div>
+                {features.map((feature) => (
+                  <article key={feature.id}>
+                    <label>
+                      Titel
+                      <input
+                        value={feature.title}
+                        onChange={(event) =>
+                          updateFeature(
+                            feature.id,
+                            "title",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Beskrivelse
+                      <textarea
+                        value={feature.description}
+                        onChange={(event) =>
+                          updateFeature(
+                            feature.id,
+                            "description",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Sortering
+                      <input
+                        type="number"
+                        value={feature.sort_order}
+                        onChange={(event) =>
+                          updateFeature(
+                            feature.id,
+                            "sort_order",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      disabled={featureSaving}
+                      onClick={() => handleSaveFeature(feature)}
+                    >
+                      Gem funktion
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={featureSaving}
+                      onClick={() => handleDeleteFeature(feature)}
+                    >
+                      Slet funktion
+                    </button>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            <h3>Tilføj funktion</h3>
+
+            <form onSubmit={handleCreateFeature}>
+              <label>
+                Titel
+                <input
+                  name="title"
+                  value={newFeature.title}
+                  onChange={updateNewFeature}
+                  required
+                />
+              </label>
+
+              <label>
+                Beskrivelse
+                <textarea
+                  name="description"
+                  value={newFeature.description}
+                  onChange={updateNewFeature}
+                />
+              </label>
+
+              <label>
+                Sortering
+                <input
+                  name="sort_order"
+                  type="number"
+                  value={newFeature.sort_order}
+                  onChange={updateNewFeature}
+                />
+              </label>
+
+              <button type="submit" disabled={featureSaving}>
+                {featureSaving ? "Gemmer..." : "Tilføj funktion"}
+              </button>
+            </form>
+          </section>
+
+          <section>
+            <h2>Indholdssektioner</h2>
+
+            <p>
+              Sektionerne bruges til at opbygge produktets offentlige
+              produktside.
+            </p>
+
+            {sections.length === 0 ? (
+              <p>Produktet har endnu ingen indholdssektioner.</p>
+            ) : (
+              <div>
+                {sections.map((section) => (
+                  <article key={section.id}>
+                    <label>
+                      Nøgle
+                      <input
+                        value={section.section_key}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "section_key",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Overlinje
+                      <input
+                        value={section.eyebrow}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "eyebrow",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Titel
+                      <input
+                        value={section.title}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "title",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Indhold
+                      <textarea
+                        value={section.body}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "body",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Layout
+                      <input
+                        value={section.layout}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "layout",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label>
+                      Sortering
+                      <input
+                        type="number"
+                        value={section.sort_order}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "sort_order",
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </label>
+
+                    <label className="admin-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={section.is_published}
+                        onChange={(event) =>
+                          updateSection(
+                            section.id,
+                            "is_published",
+                            event.target.checked,
+                          )
+                        }
+                      />
+                      Publiceret
+                    </label>
+
+                    <button
+                      type="button"
+                      disabled={saving}
+                      onClick={() => handleSaveSection(section)}
+                    >
+                      Gem sektion
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={saving}
+                      onClick={() => handleDeleteSection(section)}
+                    >
+                      Slet sektion
+                    </button>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            <h3>Tilføj sektion</h3>
+
+            <form onSubmit={handleCreateSection}>
+              <label>
+                Nøgle
+                <input
+                  name="section_key"
+                  value={newSection.section_key}
+                  onChange={updateNewSection}
+                  required
+                />
+              </label>
+
+              <label>
+                Overlinje
+                <input
+                  name="eyebrow"
+                  value={newSection.eyebrow}
+                  onChange={updateNewSection}
+                />
+              </label>
+
+              <label>
+                Titel
+                <input
+                  name="title"
+                  value={newSection.title}
+                  onChange={updateNewSection}
+                  required
+                />
+              </label>
+
+              <label>
+                Indhold
+                <textarea
+                  name="body"
+                  value={newSection.body}
+                  onChange={updateNewSection}
+                />
+              </label>
+
+              <label>
+                Layout
+                <input
+                  name="layout"
+                  value={newSection.layout}
+                  onChange={updateNewSection}
+                />
+              </label>
+
+              <label>
+                Sortering
+                <input
+                  name="sort_order"
+                  type="number"
+                  value={newSection.sort_order}
+                  onChange={updateNewSection}
+                />
+              </label>
+
+              <label className="admin-checkbox">
+                <input
+                  type="checkbox"
+                  name="is_published"
+                  checked={newSection.is_published}
+                  onChange={updateNewSection}
+                />
+                Publiceret
+              </label>
+
+              <button type="submit" disabled={saving}>
+                {saving ? "Opretter..." : "Tilføj sektion"}
+              </button>
+            </form>
+          </section>
+        </>
+      )}
+
+      {activeTab === "audiences" && (
+        <section>
+          <h2>Målgrupper</h2>
 
           <p>
-            Publicering: <strong>{form.status}</strong>
+            Målgrupperne bruges på produktets offentlige produktside.
           </p>
 
-          {error && <p role="alert">{error}</p>}
-
-          <button type="submit" disabled={saving}>
-            {saving ? "Gemmer..." : "Gem ændringer"}
-          </button>
-
-          <button
-            type="button"
-            onClick={handlePublishToggle}
-            disabled={saving}
-          >
-            {form.status === "published"
-              ? "Afpublicér produkt"
-              : "Publicér produkt"}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={saving}
-          >
-            Slet produkt
-          </button>
-        </form>
-      </section>
-
-      <section>
-        <h2>Produktfunktioner</h2>
-
-        <p>
-          Funktionerne kan senere vises på produktets offentlige side.
-        </p>
-
-        {featureError && <p role="alert">{featureError}</p>}
-
-        {features.length === 0 ? (
-          <p>Produktet har endnu ingen funktioner.</p>
-        ) : (
-          <div>
-            {features.map((feature) => (
-              <article key={feature.id}>
-                <label>
-                  Titel
-                  <input
-                    value={feature.title}
-                    onChange={(event) =>
-                      updateFeature(
-                        feature.id,
-                        "title",
-                        event.target.value,
-                      )
-                    }
-                  />
-                </label>
-
-                <label>
-                  Beskrivelse
-                  <textarea
-                    value={feature.description}
-                    onChange={(event) =>
-                      updateFeature(
-                        feature.id,
-                        "description",
-                        event.target.value,
-                      )
-                    }
-                  />
-                </label>
-
-                <label>
-                  Sortering
-                  <input
-                    type="number"
-                    value={feature.sort_order}
-                    onChange={(event) =>
-                      updateFeature(
-                        feature.id,
-                        "sort_order",
-                        event.target.value,
-                      )
-                    }
-                  />
-                </label>
-
-                <button
-                  type="button"
-                  disabled={featureSaving}
-                  onClick={() => handleSaveFeature(feature)}
-                >
-                  Gem funktion
-                </button>
-
-                <button
-                  type="button"
-                  disabled={featureSaving}
-                  onClick={() => handleDeleteFeature(feature)}
-                >
-                  Slet funktion
-                </button>
-              </article>
-            ))}
-          </div>
-        )}
-
-        <h3>Tilføj funktion</h3>
-
-        <form onSubmit={handleCreateFeature}>
-          <label>
-            Titel
-            <input
-              name="title"
-              value={newFeature.title}
-              onChange={updateNewFeature}
-              required
-            />
-          </label>
-
-          <label>
-            Beskrivelse
-            <textarea
-              name="description"
-              value={newFeature.description}
-              onChange={updateNewFeature}
-            />
-          </label>
-
-          <label>
-            Sortering
-            <input
-              name="sort_order"
-              type="number"
-              value={newFeature.sort_order}
-              onChange={updateNewFeature}
-            />
-          </label>
-
-          <button type="submit" disabled={featureSaving}>
-            {featureSaving ? "Gemmer..." : "Tilføj funktion"}
-          </button>
-        </form>
-      </section>
-<section>
-  <h2>Målgrupper</h2>
-
-  <p>
-    Målgrupperne bruges på produktets offentlige produktside.
-  </p>
-
-  {audiences.length === 0 ? (
-    <p>Produktet har endnu ingen målgrupper.</p>
-  ) : (
-    <div>
-      {audiences.map((audience) => (
-        <article key={audience.id}>
-  <label>
-    Nøgle
-    <input
-      value={audience.audience_key}
-      onChange={(event) =>
-        updateAudience(
-          audience.id,
-          "audience_key",
-          event.target.value,
-        )
-      }
-    />
-  </label>
-
-  <label>
-    Titel
-    <input
-      value={audience.title}
-      onChange={(event) =>
-        updateAudience(
-          audience.id,
-          "title",
-          event.target.value,
-        )
-      }
-    />
-  </label>
-
-  <label>
-    Beskrivelse
-    <textarea
-      value={audience.description}
-      onChange={(event) =>
-        updateAudience(
-          audience.id,
-          "description",
-          event.target.value,
-        )
-      }
-    />
-  </label>
-
-  <label>
-    Sortering
-    <input
-      type="number"
-      value={audience.sort_order}
-      onChange={(event) =>
-        updateAudience(
-          audience.id,
-          "sort_order",
-          event.target.value,
-        )
-      }
-    />
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      checked={audience.is_published}
-      onChange={(event) =>
-        updateAudience(
-          audience.id,
-          "is_published",
-          event.target.checked,
-        )
-      }
-    />
-    Publiceret
-  </label>
-  <button
-  type="button"
-  disabled={saving}
-  onClick={() => handleSaveAudience(audience)}
->
-  {saving ? "Gemmer..." : "Gem målgruppe"}
-</button>
-
-<button
-  type="button"
-  disabled={saving}
-  onClick={() => handleDeleteAudience(audience)}
->
-  Slet målgruppe
-</button>
-
-</article>
-      ))}
-    </div>
-  )}
-
-  <h3>Tilføj målgruppe</h3>
-
-<form onSubmit={handleCreateAudience}>
-  <label>
-    Nøgle
-    <input
-      name="audience_key"
-      value={newAudience.audience_key}
-      onChange={updateNewAudience}
-      required
-    />
-  </label>
-
-  <label>
-    Titel
-    <input
-      name="title"
-      value={newAudience.title}
-      onChange={updateNewAudience}
-      required
-    />
-  </label>
-
-  <label>
-    Beskrivelse
-    <textarea
-      name="description"
-      value={newAudience.description}
-      onChange={updateNewAudience}
-    />
-  </label>
-
-  <label>
-    Sortering
-    <input
-      name="sort_order"
-      type="number"
-      value={newAudience.sort_order}
-      onChange={updateNewAudience}
-    />
-  </label>
-
-  <label>
-    <input
-      name="is_published"
-      type="checkbox"
-      checked={newAudience.is_published}
-      onChange={updateNewAudience}
-    />
-    Publiceret
-  </label>
-
-  <button type="submit" disabled={saving}>
-    {saving ? "Gemmer..." : "Tilføj målgruppe"}
-  </button>
-</form>
-
-</section>
-
-<section>
-  <h2>Indholdssektioner</h2>
-
-  <p>
-    Sektionerne bruges til at opbygge produktets offentlige produktside.
-  </p>
-
-  {sections.length === 0 ? (
-    <p>Produktet har endnu ingen indholdssektioner.</p>
-  ) : (
-    <div>
-      {sections.map((section) => (
-        <article key={section.id}>
-          <label>
-            Nøgle
-            <input
-              value={section.section_key}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "section_key",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Overlinje
-            <input
-              value={section.eyebrow}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "eyebrow",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Titel
-            <input
-              value={section.title}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "title",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Indhold
-            <textarea
-              value={section.body}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "body",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Layout
-            <input
-              value={section.layout}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "layout",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Sortering
-            <input
-              type="number"
-              value={section.sort_order}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "sort_order",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={section.is_published}
-              onChange={(event) =>
-                updateSection(
-                  section.id,
-                  "is_published",
-                  event.target.checked,
-                )
-              }
-            />
-            Publiceret
-          </label>
-
-          <button
-  type="button"
-  disabled={saving}
-  onClick={() => handleSaveSection(section)}
->
-  {saving ? "Gemmer..." : "Gem sektion"}
-</button>
-<button
-  type="button"
-  disabled={saving}
-  onClick={() => handleDeleteSection(section)}
->
-  Slet sektion
-</button>
-
-        </article>
-      ))}
-    </div>
-  )}
-
-
-<form onSubmit={handleCreateSection}>
-  <label>
-    Nøgle
-    <input
-      name="section_key"
-      value={newSection.section_key}
-      onChange={updateNewSection}
-      required
-    />
-  </label>
-
-  <label>
-    Overlinje
-    <input
-      name="eyebrow"
-      value={newSection.eyebrow}
-      onChange={updateNewSection}
-    />
-  </label>
-
-  <label>
-    Titel
-    <input
-      name="title"
-      value={newSection.title}
-      onChange={updateNewSection}
-      required
-    />
-  </label>
-
-  <label>
-    Indhold
-    <textarea
-      name="body"
-      value={newSection.body}
-      onChange={updateNewSection}
-    />
-  </label>
-
-  <label>
-    Layout
-    <input
-      name="layout"
-      value={newSection.layout}
-      onChange={updateNewSection}
-    />
-  </label>
-
-  <label>
-    Sortering
-    <input
-      type="number"
-      name="sort_order"
-      value={newSection.sort_order}
-      onChange={updateNewSection}
-    />
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      name="is_published"
-      checked={newSection.is_published}
-      onChange={updateNewSection}
-    />
-    Publiceret
-  </label>
-
-  <button type="submit" disabled={saving}>
-    {saving ? "Opretter..." : "Tilføj sektion"}
-  </button>
-</form>
-
-</section>
-
-<section>
-  <h2>Priser</h2>
-
-  <p>
-    Prisplanerne bruges på produktets offentlige produktside.
-  </p>
-
-  {pricing.length === 0 ? (
-    <p>Produktet har endnu ingen prisplaner.</p>
-  ) : (
-    <div>
-      {pricing.map((price) => (
-        <article key={price.id}>
-          <label>
-            Nøgle
-            <input
-              value={price.pricing_key}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "pricing_key",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Titel
-            <input
-              value={price.title}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "title",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Beskrivelse
-            <textarea
-              value={price.description}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "description",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Pris
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={price.price_amount}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "price_amount",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Valuta
-            <input
-              value={price.price_currency}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "price_currency",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            Interval
-            <input
-              value={price.price_interval}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "price_interval",
-                  event.target.value,
-                )
-              }
-              placeholder="Fx month"
-            />
-          </label>
-
-          <label>
-            Prislabel
-            <input
-              value={price.price_label}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "price_label",
-                  event.target.value,
-                )
-              }
-              placeholder="Fx 200 kr./md."
-            />
-          </label>
-
-          <label>
-            Badge
-            <input
-              value={price.badge}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "badge",
-                  event.target.value,
-                )
-              }
-              placeholder="Fx Beta"
-            />
-          </label>
-
-          <label>
-            Sortering
-            <input
-              type="number"
-              value={price.sort_order}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "sort_order",
-                  event.target.value,
-                )
-              }
-            />
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={price.is_published}
-              onChange={(event) =>
-                updatePrice(
-                  price.id,
-                  "is_published",
-                  event.target.checked,
-                )
-              }
-            />
-            Publiceret
-          </label>
-
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => handleSavePrice(price)}
-          >
-            {saving ? "Gemmer..." : "Gem prisplan"}
-          </button>
-          <button
-  type="button"
-  disabled={saving}
-  onClick={() => handleDeletePrice(price)}
->
-  Slet prisplan
-</button>
-        </article>
-      ))}
-    </div>
-  )}
-
-<h3>Tilføj prisplan</h3>
-
-<form onSubmit={handleCreatePrice}>
-  <label>
-    Nøgle
-    <input
-      name="pricing_key"
-      value={newPrice.pricing_key}
-      onChange={updateNewPrice}
-      required
-    />
-  </label>
-
-  <label>
-    Titel
-    <input
-      name="title"
-      value={newPrice.title}
-      onChange={updateNewPrice}
-      required
-    />
-  </label>
-
-  <label>
-    Beskrivelse
-    <textarea
-      name="description"
-      value={newPrice.description}
-      onChange={updateNewPrice}
-    />
-  </label>
-
-  <label>
-    Pris
-    <input
-      name="price_amount"
-      type="number"
-      min="0"
-      step="0.01"
-      value={newPrice.price_amount}
-      onChange={updateNewPrice}
-    />
-  </label>
-
-  <label>
-    Valuta
-    <input
-      name="price_currency"
-      value={newPrice.price_currency}
-      onChange={updateNewPrice}
-    />
-  </label>
-
-  <label>
-    Interval
-    <input
-      name="price_interval"
-      value={newPrice.price_interval}
-      onChange={updateNewPrice}
-      placeholder="Fx month"
-    />
-  </label>
-
-  <label>
-    Prislabel
-    <input
-      name="price_label"
-      value={newPrice.price_label}
-      onChange={updateNewPrice}
-      placeholder="Fx 200 kr./md."
-    />
-  </label>
-
-  <label>
-    Badge
-    <input
-      name="badge"
-      value={newPrice.badge}
-      onChange={updateNewPrice}
-      placeholder="Fx Beta"
-    />
-  </label>
-
-  <label>
-    Sortering
-    <input
-      name="sort_order"
-      type="number"
-      value={newPrice.sort_order}
-      onChange={updateNewPrice}
-    />
-  </label>
-
-  <label>
-    <input
-      name="is_published"
-      type="checkbox"
-      checked={newPrice.is_published}
-      onChange={updateNewPrice}
-    />
-    Publiceret
-  </label>
-
-  <button type="submit" disabled={saving}>
-    {saving ? "Opretter..." : "Tilføj prisplan"}
-  </button>
-</form>
-
-</section>
-
-<section>
-  <h2>CTA'er</h2>
-
-  <p>
-    CTA'er styrer knapper og links på produktets offentlige produktside.
-  </p>
-
-  {ctas.length === 0 ? (
-    <p>Produktet har endnu ingen CTA'er.</p>
-  ) : (
-    <div>
-      {ctas.map((cta) => (
-        <article key={cta.id}>
-          <label>
-            Nøgle
-            <input
-              value={cta.cta_key}
-              onChange={(event) =>
-                updateCta(cta.id, "cta_key", event.target.value)
-              }
-            />
-          </label>
-
-          <label>
-            Label
-            <input
-              value={cta.label}
-              onChange={(event) =>
-                updateCta(cta.id, "label", event.target.value)
-              }
-            />
-          </label>
-
-          <label>
-            URL
-            <input
-              type="url"
-              value={cta.url}
-              onChange={(event) =>
-                updateCta(cta.id, "url", event.target.value)
-              }
-            />
-          </label>
-
-          <label>
-            Variant
-            <select
-              value={cta.variant}
-              onChange={(event) =>
-                updateCta(cta.id, "variant", event.target.value)
-              }
-            >
-              <option value="primary">Primary</option>
-              <option value="secondary">Secondary</option>
-              <option value="text">Text</option>
-            </select>
-          </label>
-
-          <label>
-            Placering
-            <select
-              value={cta.placement}
-              onChange={(event) =>
-                updateCta(cta.id, "placement", event.target.value)
-              }
-            >
-              <option value="hero">Hero</option>
-              <option value="content">Content</option>
-              <option value="final">Final</option>
-            </select>
-          </label>
-
-          <label>
-            Sortering
-            <input
-              type="number"
-              value={cta.sort_order}
-              onChange={(event) =>
-                updateCta(cta.id, "sort_order", event.target.value)
-              }
-            />
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={cta.is_external}
-              onChange={(event) =>
-                updateCta(cta.id, "is_external", event.target.checked)
-              }
-            />
-            Eksternt link
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={cta.is_published}
-              onChange={(event) =>
-                updateCta(cta.id, "is_published", event.target.checked)
-              }
-            />
-            Publiceret
-          </label>
-
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => handleSaveCta(cta)}
-          >
-            {saving ? "Gemmer..." : "Gem CTA"}
-          </button>
-
-          <button
-  type="button"
-  disabled={saving}
-  onClick={() => handleDeleteCta(cta)}
->
-  Slet CTA
-</button>
-        </article>
-      ))}
-    </div>
-  )}
-</section>
-
-<h3>Tilføj CTA</h3>
-
-<form onSubmit={handleCreateCta}>
-  <label>
-    Nøgle
-    <input
-      name="cta_key"
-      value={newCta.cta_key}
-      onChange={updateNewCta}
-      required
-    />
-  </label>
-
-  <label>
-    Label
-    <input
-      name="label"
-      value={newCta.label}
-      onChange={updateNewCta}
-      required
-    />
-  </label>
-
-  <label>
-    URL
-    <input
-      name="url"
-      type="url"
-      value={newCta.url}
-      onChange={updateNewCta}
-      required
-    />
-  </label>
-
-  <label>
-    Variant
-    <select
-      name="variant"
-      value={newCta.variant}
-      onChange={updateNewCta}
-    >
-      <option value="primary">Primary</option>
-      <option value="secondary">Secondary</option>
-      <option value="text">Text</option>
-    </select>
-  </label>
-
-  <label>
-    Placering
-    <select
-      name="placement"
-      value={newCta.placement}
-      onChange={updateNewCta}
-    >
-      <option value="hero">Hero</option>
-      <option value="content">Content</option>
-      <option value="final">Final</option>
-    </select>
-  </label>
-
-  <label>
-    Sortering
-    <input
-      name="sort_order"
-      type="number"
-      value={newCta.sort_order}
-      onChange={updateNewCta}
-    />
-  </label>
-
-  <label>
-    <input
-      name="is_external"
-      type="checkbox"
-      checked={newCta.is_external}
-      onChange={updateNewCta}
-    />
-    Eksternt link
-  </label>
-
-  <label>
-    <input
-      name="is_published"
-      type="checkbox"
-      checked={newCta.is_published}
-      onChange={updateNewCta}
-    />
-    Publiceret
-  </label>
-
-  <button type="submit" disabled={saving}>
-    {saving ? "Opretter..." : "Tilføj CTA"}
-  </button>
-</form>
-
+          {audiences.length === 0 ? (
+            <p>Produktet har endnu ingen målgrupper.</p>
+          ) : (
+            <div>
+              {audiences.map((audience) => (
+                <article key={audience.id}>
+                  <label>
+                    Nøgle
+                    <input
+                      value={audience.audience_key}
+                      onChange={(event) =>
+                        updateAudience(
+                          audience.id,
+                          "audience_key",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Titel
+                    <input
+                      value={audience.title}
+                      onChange={(event) =>
+                        updateAudience(
+                          audience.id,
+                          "title",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Beskrivelse
+                    <textarea
+                      value={audience.description}
+                      onChange={(event) =>
+                        updateAudience(
+                          audience.id,
+                          "description",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Sortering
+                    <input
+                      type="number"
+                      value={audience.sort_order}
+                      onChange={(event) =>
+                        updateAudience(
+                          audience.id,
+                          "sort_order",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label className="admin-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={audience.is_published}
+                      onChange={(event) =>
+                        updateAudience(
+                          audience.id,
+                          "is_published",
+                          event.target.checked,
+                        )
+                      }
+                    />
+                    Publiceret
+                  </label>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleSaveAudience(audience)}
+                  >
+                    Gem målgruppe
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleDeleteAudience(audience)}
+                  >
+                    Slet målgruppe
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <h3>Tilføj målgruppe</h3>
+
+          <form onSubmit={handleCreateAudience}>
+            <label>
+              Nøgle
+              <input
+                name="audience_key"
+                value={newAudience.audience_key}
+                onChange={updateNewAudience}
+                required
+              />
+            </label>
+
+            <label>
+              Titel
+              <input
+                name="title"
+                value={newAudience.title}
+                onChange={updateNewAudience}
+                required
+              />
+            </label>
+
+            <label>
+              Beskrivelse
+              <textarea
+                name="description"
+                value={newAudience.description}
+                onChange={updateNewAudience}
+              />
+            </label>
+
+            <label>
+              Sortering
+              <input
+                name="sort_order"
+                type="number"
+                value={newAudience.sort_order}
+                onChange={updateNewAudience}
+              />
+            </label>
+
+            <label className="admin-checkbox">
+              <input
+                name="is_published"
+                type="checkbox"
+                checked={newAudience.is_published}
+                onChange={updateNewAudience}
+              />
+              Publiceret
+            </label>
+
+            <button type="submit" disabled={saving}>
+              {saving ? "Gemmer..." : "Tilføj målgruppe"}
+            </button>
+          </form>
+        </section>
+      )}
+
+      {activeTab === "pricing" && (
+        <section>
+          <h2>Priser</h2>
+
+          <p>
+            Prisplanerne bruges på produktets offentlige produktside.
+          </p>
+
+          {pricing.length === 0 ? (
+            <p>Produktet har endnu ingen prisplaner.</p>
+          ) : (
+            <div>
+              {pricing.map((price) => (
+                <article key={price.id}>
+                  <label>
+                    Nøgle
+                    <input
+                      value={price.pricing_key}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "pricing_key",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Titel
+                    <input
+                      value={price.title}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "title",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Beskrivelse
+                    <textarea
+                      value={price.description}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "description",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Pris
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={price.price_amount}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "price_amount",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Valuta
+                    <input
+                      value={price.price_currency}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "price_currency",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Interval
+                    <input
+                      value={price.price_interval}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "price_interval",
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Fx month"
+                    />
+                  </label>
+
+                  <label>
+                    Prislabel
+                    <input
+                      value={price.price_label}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "price_label",
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Fx 200 kr./md."
+                    />
+                  </label>
+
+                  <label>
+                    Badge
+                    <input
+                      value={price.badge}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "badge",
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Fx Beta"
+                    />
+                  </label>
+
+                  <label>
+                    Sortering
+                    <input
+                      type="number"
+                      value={price.sort_order}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "sort_order",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label className="admin-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={price.is_published}
+                      onChange={(event) =>
+                        updatePrice(
+                          price.id,
+                          "is_published",
+                          event.target.checked,
+                        )
+                      }
+                    />
+                    Publiceret
+                  </label>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleSavePrice(price)}
+                  >
+                    Gem prisplan
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleDeletePrice(price)}
+                  >
+                    Slet prisplan
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <h3>Tilføj prisplan</h3>
+
+          <form onSubmit={handleCreatePrice}>
+            <label>
+              Nøgle
+              <input
+                name="pricing_key"
+                value={newPrice.pricing_key}
+                onChange={updateNewPrice}
+                required
+              />
+            </label>
+
+            <label>
+              Titel
+              <input
+                name="title"
+                value={newPrice.title}
+                onChange={updateNewPrice}
+                required
+              />
+            </label>
+
+            <label>
+              Beskrivelse
+              <textarea
+                name="description"
+                value={newPrice.description}
+                onChange={updateNewPrice}
+              />
+            </label>
+
+            <label>
+              Pris
+              <input
+                name="price_amount"
+                type="number"
+                min="0"
+                step="0.01"
+                value={newPrice.price_amount}
+                onChange={updateNewPrice}
+              />
+            </label>
+
+            <label>
+              Valuta
+              <input
+                name="price_currency"
+                value={newPrice.price_currency}
+                onChange={updateNewPrice}
+              />
+            </label>
+
+            <label>
+              Interval
+              <input
+                name="price_interval"
+                value={newPrice.price_interval}
+                onChange={updateNewPrice}
+                placeholder="Fx month"
+              />
+            </label>
+
+            <label>
+              Prislabel
+              <input
+                name="price_label"
+                value={newPrice.price_label}
+                onChange={updateNewPrice}
+                placeholder="Fx 200 kr./md."
+              />
+            </label>
+
+            <label>
+              Badge
+              <input
+                name="badge"
+                value={newPrice.badge}
+                onChange={updateNewPrice}
+                placeholder="Fx Beta"
+              />
+            </label>
+
+            <label>
+              Sortering
+              <input
+                name="sort_order"
+                type="number"
+                value={newPrice.sort_order}
+                onChange={updateNewPrice}
+              />
+            </label>
+
+            <label className="admin-checkbox">
+              <input
+                name="is_published"
+                type="checkbox"
+                checked={newPrice.is_published}
+                onChange={updateNewPrice}
+              />
+              Publiceret
+            </label>
+
+            <button type="submit" disabled={saving}>
+              {saving ? "Opretter..." : "Tilføj prisplan"}
+            </button>
+          </form>
+        </section>
+      )}
+
+      {activeTab === "ctas" && (
+        <section>
+          <h2>CTA'er</h2>
+
+          <p>
+            CTA'er styrer knapper og links på produktets offentlige
+            produktside.
+          </p>
+
+          {ctas.length === 0 ? (
+            <p>Produktet har endnu ingen CTA'er.</p>
+          ) : (
+            <div>
+              {ctas.map((cta) => (
+                <article key={cta.id}>
+                  <label>
+                    Nøgle
+                    <input
+                      value={cta.cta_key}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "cta_key",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Label
+                    <input
+                      value={cta.label}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "label",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    URL
+                    <input
+                      type="url"
+                      value={cta.url}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "url",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Variant
+                    <select
+                      value={cta.variant}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "variant",
+                          event.target.value,
+                        )
+                      }
+                    >
+                      <option value="primary">Primary</option>
+                      <option value="secondary">Secondary</option>
+                      <option value="text">Text</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Placering
+                    <select
+                      value={cta.placement}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "placement",
+                          event.target.value,
+                        )
+                      }
+                    >
+                      <option value="hero">Hero</option>
+                      <option value="content">Content</option>
+                      <option value="final">Final</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Sortering
+                    <input
+                      type="number"
+                      value={cta.sort_order}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "sort_order",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label className="admin-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={cta.is_external}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "is_external",
+                          event.target.checked,
+                        )
+                      }
+                    />
+                    Eksternt link
+                  </label>
+
+                  <label className="admin-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={cta.is_published}
+                      onChange={(event) =>
+                        updateCta(
+                          cta.id,
+                          "is_published",
+                          event.target.checked,
+                        )
+                      }
+                    />
+                    Publiceret
+                  </label>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleSaveCta(cta)}
+                  >
+                    Gem CTA
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleDeleteCta(cta)}
+                  >
+                    Slet CTA
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <h3>Tilføj CTA</h3>
+
+          <form onSubmit={handleCreateCta}>
+            <label>
+              Nøgle
+              <input
+                name="cta_key"
+                value={newCta.cta_key}
+                onChange={updateNewCta}
+                required
+              />
+            </label>
+
+            <label>
+              Label
+              <input
+                name="label"
+                value={newCta.label}
+                onChange={updateNewCta}
+                required
+              />
+            </label>
+
+            <label>
+              URL
+              <input
+                name="url"
+                type="url"
+                value={newCta.url}
+                onChange={updateNewCta}
+                required
+              />
+            </label>
+
+            <label>
+              Variant
+              <select
+                name="variant"
+                value={newCta.variant}
+                onChange={updateNewCta}
+              >
+                <option value="primary">Primary</option>
+                <option value="secondary">Secondary</option>
+                <option value="text">Text</option>
+              </select>
+            </label>
+
+            <label>
+              Placering
+              <select
+                name="placement"
+                value={newCta.placement}
+                onChange={updateNewCta}
+              >
+                <option value="hero">Hero</option>
+                <option value="content">Content</option>
+                <option value="final">Final</option>
+              </select>
+            </label>
+
+            <label>
+              Sortering
+              <input
+                name="sort_order"
+                type="number"
+                value={newCta.sort_order}
+                onChange={updateNewCta}
+              />
+            </label>
+
+            <label className="admin-checkbox">
+              <input
+                name="is_external"
+                type="checkbox"
+                checked={newCta.is_external}
+                onChange={updateNewCta}
+              />
+              Eksternt link
+            </label>
+
+            <label className="admin-checkbox">
+              <input
+                name="is_published"
+                type="checkbox"
+                checked={newCta.is_published}
+                onChange={updateNewCta}
+              />
+              Publiceret
+            </label>
+
+            <button type="submit" disabled={saving}>
+              {saving ? "Opretter..." : "Tilføj CTA"}
+            </button>
+          </form>
+        </section>
+      )}
     </main>
   );
 }

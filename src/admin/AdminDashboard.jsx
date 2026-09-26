@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase.js";
 
+const lifecycleLabels = {
+  development: "Under udvikling",
+  beta: "Beta",
+  active: "Aktiv",
+  coming_soon: "Kommer snart",
+};
+
 export function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -24,6 +31,8 @@ export function AdminDashboard() {
           short_description,
           description,
           status,
+          lifecycle_status,
+          show_on_homepage,
           sort_order,
           website_url,
           created_at,
@@ -94,11 +103,27 @@ export function AdminDashboard() {
             {products.map((product) => (
               <article className="admin-product-card" key={product.id}>
                 <div>
-                  <small>
-                    {product.status === "published"
-                      ? "Publiceret"
-                      : "Kladde"}
-                  </small>
+                <div className="admin-product-statuses">
+                  <span className={`admin-status admin-status--${product.status}`}>
+                    {product.status === "published" ? "Publiceret" : "Kladde"}
+                  </span>
+
+                  <span className={`admin-status admin-status--${product.lifecycle_status}`}>
+                    {lifecycleLabels[product.lifecycle_status] ?? "Under udvikling"}
+                  </span>
+
+                  <span
+                    className={`admin-status ${
+                      product.show_on_homepage
+                        ? "admin-status--homepage"
+                        : "admin-status--hidden"
+                    }`}
+                  >
+                    {product.show_on_homepage
+                      ? "På forsiden"
+                      : "Skjult fra forsiden"}
+                  </span>
+                </div>
 
                   <h3>{product.name}</h3>
 
